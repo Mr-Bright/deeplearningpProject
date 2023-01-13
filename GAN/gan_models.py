@@ -1,22 +1,14 @@
+import torch
+import torch.nn as nn
+
 """
 Network Architectures
 The following are the discriminator and generator architectures
 """
 
-import time
-import torch
-import torch.nn as nn
-import torch.optim as optim
-from torch.utils.data import DataLoader
-from torchvision import datasets
-from torchvision.transforms import transforms
-import numpy as np
-import matplotlib.pyplot as plt
-
-
-class Discriminator(nn.Module):
+class discriminator(nn.Module):
     def __init__(self):
-        super(Discriminator, self).__init__()
+        super(discriminator, self).__init__()
         self.fc1 = nn.Linear(784, 512)
         self.fc2 = nn.Linear(512, 1)
         self.activation = nn.LeakyReLU(0.1)
@@ -28,9 +20,9 @@ class Discriminator(nn.Module):
         return nn.Sigmoid()(x)
 
 
-class Generator(nn.Module):
+class generator(nn.Module):
     def __init__(self):
-        super(Generator, self).__init__()
+        super(generator, self).__init__()
         self.fc1 = nn.Linear(128, 1024)
         self.fc2 = nn.Linear(1024, 2048)
         self.fc3 = nn.Linear(2048, 784)
