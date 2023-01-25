@@ -11,10 +11,10 @@ raw_data = shuffle(pd.read_excel('resale17dd.xlsx'))
 
 train_data = raw_data[0:int(len(raw_data) * 0.9)]
 test_data = raw_data[len(train_data):len(raw_data)]
-train_x = torch.tensor(train_data.iloc[:, :5].values, dtype='float32')
-train_y = torch.tensor(train_data.iloc[:, 5].values, dtype='float32')
-test_x = torch.tensor(test_data.iloc[:, :5].values, dtype='float32')
-test_y = torch.tensor(test_data.iloc[:, 5].values, dtype='float32')
+train_x = torch.tensor(train_data.iloc[:, :5].values, dtype=torch.float)
+train_y = torch.tensor(train_data.iloc[:, 5].values, dtype=torch.float)[..., None]
+test_x = torch.tensor(test_data.iloc[:, :5].values, dtype=torch.float)
+test_y = torch.tensor(test_data.iloc[:, 5].values, dtype=torch.float)[..., None]
 train_data = Data.TensorDataset(train_x, train_y)
 test_data = Data.TensorDataset(test_x, test_y)
 
@@ -40,8 +40,8 @@ class CNN1D(nn.Module):
 
 
 # set hyper parameters
-epochs = 20
-lr = 2e-3
+epochs = 200
+lr = 0.01
 batch_size = 32
 Dataloader = Data.DataLoader(train_data, batch_size=batch_size, shuffle=True)
 
@@ -64,18 +64,20 @@ for epoch in range(epochs):
         loss_mae = lossMAE(output, batch_y)
         loss_mse.backward()
         opt.step()
-        mse_loss += loss_mse*batch_x.size(0)
-        mae_loss += loss_mae*batch_x.size(0)
+        mse_loss += loss_mse.item()*batch_x.size(0)
+        mae_loss += loss_mae.item()*batch_x.size(0)
+
+    print('epoch: {}, MES: {}'.format(epoch+1, mse_loss/len(Dataloader.dataset)))
 
     mse_list.append(mse_loss/len(Dataloader.dataset))
     mae_list.append(mae_loss/len(Dataloader.dataset))
 
 x_axis = range(0, epochs)
-plt.subplots(2, 1, 1)
+plt.subplot(2, 1, 1)
 plt.plot(x_axis, mse_list, 'o-')
 plt.title("train MSE with epochs")
 plt.ylabel("MSE")
-plt.subplots(2, 1, 2)
+plt.subplot(2, 1, 2)
 plt.plot(x_axis, mae_list, '.-')
 plt.title("train MAE with epochs")
 plt.ylabel("MAE")
