@@ -34,9 +34,20 @@ class MLP(nn.Module):
         return self.activation(self.output(x))
 
 
+
 class CNN1D(nn.Module):
     def __init__(self):
         super(CNN1D, self).__init__()
+        self.cnn1d_1 = nn.Conv1d(in_channels=1, out_channels=10, kernel_size=2)
+        self.cnn1d_2 = nn.Conv1d(in_channels=10, out_channels=20, kernel_size=2)
+        self.fc = nn.Linear(20*3, 1)
+        self.activation = nn.ReLU()
+
+    def forward(self, x):
+        x = self.activation(self.cnn1d_1(x))
+        x = self.activation(self.cnn1d_2(x))
+        x = x.view(x.size(0), -1)
+        return self.activation(self.fc(x))
 
 
 # set hyper parameters
@@ -45,42 +56,92 @@ lr = 0.01
 batch_size = 32
 Dataloader = Data.DataLoader(train_data, batch_size=batch_size, shuffle=True)
 
-
 # train MLP model and test
 MLP_model = MLP()
 lossMSE = nn.MSELoss()
 lossMAE = nn.L1Loss()
 opt = optim.Adam(MLP_model.parameters(), lr=lr, betas=(0.5, 0.999))
-
+#
 mse_list = []
 mae_list = []
 test_mse_list = []
 test_mae_list = []
+# for epoch in range(epochs):
+#     mse_loss = 0.0
+#     mae_loss = 0.0
+#     for batch_x, batch_y in Dataloader:
+#         opt.zero_grad()
+#         output = MLP_model(batch_x)
+#         loss_mse = lossMSE(output, batch_y)
+#         loss_mae = lossMAE(output, batch_y)
+#         loss_mse.backward()
+#         opt.step()
+#         mse_loss += loss_mse.item() * batch_x.size(0)
+#         mae_loss += loss_mae.item() * batch_x.size(0)
+#
+#     print('epoch: {}, train MES: {}, MAS: {}'.format(epoch + 1, mse_loss / len(Dataloader.dataset),
+#                                                      mae_loss / len(Dataloader.dataset)))
+#     mse_list.append(mse_loss / len(Dataloader.dataset))
+#     mae_list.append(mae_loss / len(Dataloader.dataset))
+#     # test mse and mae
+#     with torch.no_grad():
+#         test_result = MLP_model(test_x)
+#         test_loss_mse = lossMSE(test_result, test_y)
+#         test_loss_mae = lossMAE(test_result, test_y)
+#         print('epoch: {}, test MES: {}, MAS: {}'.format(epoch + 1, test_loss_mse / len(test_y),
+#                                                         test_loss_mae / len(test_y)))
+#         test_mse_list.append(test_loss_mse.item())
+#         test_mae_list.append(test_loss_mae.item())
+#
+# x_axis = range(0, epochs)
+# plt.suptitle('MLP model performance')
+# plt.subplot(2, 2, 1)
+# plt.plot(x_axis, mse_list, 'o-')
+# plt.title("train MSE with epochs")
+# plt.ylabel("MSE")
+# plt.subplot(2, 2, 2)
+# plt.plot(x_axis, mae_list, '.-')
+# plt.title("train MAE with epochs")
+# plt.ylabel("MAE")
+# plt.subplot(2, 2, 3)
+# plt.plot(x_axis, test_mse_list, 'o-r')
+# plt.title("test MSE with epochs")
+# plt.ylabel("MSE")
+# plt.subplot(2, 2, 4)
+# plt.plot(x_axis, test_mae_list, '.-r')
+# plt.title("test MAE with epochs")
+# plt.ylabel("MAE")
+# plt.show()
+
+# train and test 1D_CNN model
+CNN_model = CNN1D()
+
 for epoch in range(epochs):
     mse_loss = 0.0
     mae_loss = 0.0
     for batch_x, batch_y in Dataloader:
         opt.zero_grad()
-        output = MLP_model(batch_x)
+        output = CNN_model(batch_x)
         loss_mse = lossMSE(output, batch_y)
         loss_mae = lossMAE(output, batch_y)
         loss_mse.backward()
         opt.step()
-        mse_loss += loss_mse.item()*batch_x.size(0)
-        mae_loss += loss_mae.item()*batch_x.size(0)
+        mse_loss += loss_mse.item() * batch_x.size(0)
+        mae_loss += loss_mae.item() * batch_x.size(0)
 
-    print('epoch: {}, train MES: {}, MAS: {}'.format(epoch+1, mse_loss/len(Dataloader.dataset), mae_loss/len(Dataloader.dataset)))
-    mse_list.append(mse_loss/len(Dataloader.dataset))
-    mae_list.append(mae_loss/len(Dataloader.dataset))
+    print('epoch: {}, train MES: {}, MAS: {}'.format(epoch + 1, mse_loss / len(Dataloader.dataset),
+                                                     mae_loss / len(Dataloader.dataset)))
+    mse_list.append(mse_loss / len(Dataloader.dataset))
+    mae_list.append(mae_loss / len(Dataloader.dataset))
     # test mse and mae
     with torch.no_grad():
-        test_result = MLP_model(test_x)
+        test_result = CNN_model(test_x)
         test_loss_mse = lossMSE(test_result, test_y)
         test_loss_mae = lossMAE(test_result, test_y)
-        print('epoch: {}, test MES: {}, MAS: {}'.format(epoch+1, test_loss_mse/len(test_y), test_loss_mae/len(test_y)))
+        print('epoch: {}, test MES: {}, MAS: {}'.format(epoch + 1, test_loss_mse / len(test_y),
+                                                        test_loss_mae / len(test_y)))
         test_mse_list.append(test_loss_mse.item())
         test_mae_list.append(test_loss_mae.item())
-
 
 x_axis = range(0, epochs)
 plt.suptitle('MLP model performance')
@@ -101,7 +162,4 @@ plt.plot(x_axis, test_mae_list, '.-r')
 plt.title("test MAE with epochs")
 plt.ylabel("MAE")
 plt.show()
-
-
-
 
