@@ -67,7 +67,7 @@ for epoch in range(epochs):
         mse_loss += loss_mse.item()*batch_x.size(0)
         mae_loss += loss_mae.item()*batch_x.size(0)
 
-    print('epoch: {}, MES: {}'.format(epoch+1, mse_loss/len(Dataloader.dataset)))
+    print('epoch: {}, MES: {}, MAS: {}'.format(epoch+1, mse_loss/len(Dataloader.dataset), mae_loss/len(Dataloader.dataset)))
 
     mse_list.append(mse_loss/len(Dataloader.dataset))
     mae_list.append(mae_loss/len(Dataloader.dataset))
