@@ -73,6 +73,8 @@ for epoch in range(epochs):
         output = MLP_model(batch_x)
         loss_mse = lossMSE(output, batch_y)
         loss_mae = lossMAE(output, batch_y)
+        # very important! the stupid torch do not update parameters sometimes!
+        loss_mse = loss_mse.requires_grad_()
         loss_mse.backward()
         opt.step()
         mse_loss += loss_mse.item() * batch_x.size(0)
@@ -132,6 +134,7 @@ for epoch in range(epochs):
         output = CNN_model(batch_x)
         loss_mse = lossMSE(output, batch_y)
         loss_mae = lossMAE(output, batch_y)
+        loss_mse = loss_mse.requires_grad_()
         loss_mse.backward()
         opt.step()
         mse_loss += loss_mse.item() * batch_x.size(0)
