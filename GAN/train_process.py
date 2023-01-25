@@ -2,7 +2,6 @@
 Import necessary libraries to create a generative adversarial network
 The code is mainly developed using the PyTorch library
 """
-import time
 import torch
 import torch.nn as nn
 import torch.optim as optim
