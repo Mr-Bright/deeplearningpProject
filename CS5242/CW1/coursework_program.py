@@ -73,12 +73,13 @@ for epoch in range(epochs):
     mse_list.append(mse_loss/len(Dataloader.dataset))
     mae_list.append(mae_loss/len(Dataloader.dataset))
     # test mse and mae
-    test_result = MLP_model(test_x)
-    test_loss_mse = lossMSE(test_result, test_y)
-    test_loss_mae = lossMAE(test_result, test_y)
-    print('epoch: {}, test MES: {}, MAS: {}'.format(epoch+1, test_loss_mse/len(test_y), test_loss_mae/len(test_y)))
-    test_mse_list.append(test_loss_mse.item())
-    test_mae_list.append(test_loss_mae.item())
+    with torch.no_grad():
+        test_result = MLP_model(test_x)
+        test_loss_mse = lossMSE(test_result, test_y)
+        test_loss_mae = lossMAE(test_result, test_y)
+        print('epoch: {}, test MES: {}, MAS: {}'.format(epoch+1, test_loss_mse/len(test_y), test_loss_mae/len(test_y)))
+        test_mse_list.append(test_loss_mse.item())
+        test_mae_list.append(test_loss_mae.item())
 
 
 x_axis = range(0, epochs)
