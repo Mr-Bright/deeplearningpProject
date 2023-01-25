@@ -69,9 +69,9 @@ for epoch in range(epochs):
         mse_loss += loss_mse.item()*batch_x.size(0)
         mae_loss += loss_mae.item()*batch_x.size(0)
 
-    print('epoch: {}, train MES: {}, MAS: {}'.format(epoch+1, mse_loss/len(Dataloader.dataset), mae_loss/len(Dataloader.dataset)))
-    mse_list.append(mse_loss/len(Dataloader.dataset))
-    mae_list.append(mae_loss/len(Dataloader.dataset))
+    print('epoch: {}, train MES: {}, MAS: {}'.format(epoch+1, mse_loss/train_x.size(0), mae_loss/train_x.size(0)))
+    mse_list.append(mse_loss/train_x.size(0))
+    mae_list.append(mae_loss/train_x.size(0))
     # test mse and mae
     with torch.no_grad():
         test_result = MLP_model(test_x)
