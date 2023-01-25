@@ -54,6 +54,8 @@ opt = optim.Adam(MLP_model.parameters(), lr=lr, betas=(0.5, 0.999))
 
 mse_list = []
 mae_list = []
+test_mse_list = []
+test_mae_list = []
 for epoch in range(epochs):
     mse_loss = 0.0
     mae_loss = 0.0
@@ -67,19 +69,34 @@ for epoch in range(epochs):
         mse_loss += loss_mse.item()*batch_x.size(0)
         mae_loss += loss_mae.item()*batch_x.size(0)
 
-    print('epoch: {}, MES: {}, MAS: {}'.format(epoch+1, mse_loss/len(Dataloader.dataset), mae_loss/len(Dataloader.dataset)))
-
+    print('epoch: {}, train MES: {}, MAS: {}'.format(epoch+1, mse_loss/len(Dataloader.dataset), mae_loss/len(Dataloader.dataset)))
     mse_list.append(mse_loss/len(Dataloader.dataset))
     mae_list.append(mae_loss/len(Dataloader.dataset))
+    # test mse and mae
+    test_result = MLP_model(test_x)
+    test_loss_mse = lossMSE(test_result, test_y)
+    test_loss_mae = lossMAE(test_result, test_y)
+    print('epoch: {}, test MES: {}, MAS: {}'.format(epoch+1, test_loss_mse/len(test_y), test_loss_mae/len(test_y)))
+    test_mse_list.append(test_loss_mse.item())
+    test_mae_list.append(test_loss_mae.item())
+
 
 x_axis = range(0, epochs)
-plt.subplot(2, 1, 1)
+plt.subplot(2, 2, 1)
 plt.plot(x_axis, mse_list, 'o-')
 plt.title("train MSE with epochs")
 plt.ylabel("MSE")
-plt.subplot(2, 1, 2)
+plt.subplot(2, 2, 2)
 plt.plot(x_axis, mae_list, '.-')
 plt.title("train MAE with epochs")
+plt.ylabel("MAE")
+plt.subplot(2, 2, 3)
+plt.plot(x_axis, test_mse_list, 'o-r')
+plt.title("test MSE with epochs")
+plt.ylabel("MSE")
+plt.subplot(2, 2, 4)
+plt.plot(x_axis, test_mae_list, '.-r')
+plt.title("test MAE with epochs")
 plt.ylabel("MAE")
 plt.show()
 
