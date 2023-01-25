@@ -11,10 +11,10 @@ raw_data = shuffle(pd.read_excel('resale17dd.xlsx'))
 
 train_data = raw_data[0:int(len(raw_data) * 0.9)]
 test_data = raw_data[len(train_data):len(raw_data)]
-train_x = torch.tensor(train_data.iloc[:, :4].values)
-train_y = torch.tensor(train_data.iloc[:, 5].values)
-test_x = torch.tensor(test_data.iloc[:, :4].values)
-test_y = torch.tensor(test_data.iloc[:, 5].values)
+train_x = torch.tensor(train_data.iloc[:, :5].values, dtype='float32')
+train_y = torch.tensor(train_data.iloc[:, 5].values, dtype='float32')
+test_x = torch.tensor(test_data.iloc[:, :5].values, dtype='float32')
+test_y = torch.tensor(test_data.iloc[:, 5].values, dtype='float32')
 train_data = Data.TensorDataset(train_x, train_y)
 test_data = Data.TensorDataset(test_x, test_y)
 
@@ -29,7 +29,6 @@ class MLP(nn.Module):
         self.activation = nn.ReLU()
 
     def forward(self, x):
-        x = x.view(-1, 5)
         x = self.activation(self.hidden1(x))
         x = self.activation(self.hidden2(x))
         return self.activation(self.output(x))
