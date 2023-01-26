@@ -52,20 +52,21 @@ class CNN1D(nn.Module):
 # set hyper parameters
 epochs = 200
 lr = 0.001
-batch_size = 32
+batch_size = 64
 Dataloader = Data.DataLoader(train_data, batch_size=batch_size, shuffle=True)
 
 # train MLP model and test
 MLP_model = MLP()
 lossMSE = nn.MSELoss()
 lossMAE = nn.L1Loss()
-opt = optim.Adam(MLP_model.parameters(), lr=lr, betas=(0.5, 0.999))
+opt = optim.Adam(MLP_model.parameters(), lr=lr)
 #
 mse_list = []
 mae_list = []
 test_mse_list = []
 test_mae_list = []
 for epoch in range(epochs):
+    MLP_model.train()
     mse_loss = 0.0
     mae_loss = 0.0
     for batch_x, batch_y in Dataloader:
@@ -85,14 +86,14 @@ for epoch in range(epochs):
     mse_list.append(mse_loss / len(Dataloader.dataset))
     mae_list.append(mae_loss / len(Dataloader.dataset))
     # test mse and mae
-    with torch.no_grad():
-        test_result = MLP_model(test_x)
-        test_loss_mse = lossMSE(test_result, test_y)
-        test_loss_mae = lossMAE(test_result, test_y)
-        print('epoch: {}, test MES: {}, MAS: {}'.format(epoch + 1, test_loss_mse / len(test_y),
-                                                        test_loss_mae / len(test_y)))
-        test_mse_list.append(test_loss_mse.item())
-        test_mae_list.append(test_loss_mae.item())
+    MLP_model.eval()
+    test_result = MLP_model(test_x)
+    test_loss_mse = lossMSE(test_result, test_y)
+    test_loss_mae = lossMAE(test_result, test_y)
+    print('epoch: {}, test MES: {}, MAS: {}'.format(epoch + 1, test_loss_mse / len(test_y),
+                                                    test_loss_mae / len(test_y)))
+    test_mse_list.append(test_loss_mse.item())
+    test_mae_list.append(test_loss_mae.item())
 
 x_axis = range(0, epochs)
 plt.suptitle('MLP model performance')
@@ -118,25 +119,27 @@ plt.show()
 CNN_model = CNN1D()
 lossMSE = nn.MSELoss()
 lossMAE = nn.L1Loss()
-opt = optim.Adam(CNN_model.parameters(), lr=lr, betas=(0.5, 0.999))
+opt_cnn = optim.Adam(CNN_model.parameters(), lr=lr)
 #
 mse_list = []
 mae_list = []
 test_mse_list = []
 test_mae_list = []
 
+
 for epoch in range(epochs):
+    CNN_model.train()
     mse_loss = 0.0
     mae_loss = 0.0
     for batch_x, batch_y in Dataloader:
-        opt.zero_grad()
+        opt_cnn.zero_grad()
         batch_x = batch_x[None, ...].permute(1, 0, 2)
         output = CNN_model(batch_x)
         loss_mse = lossMSE(output, batch_y)
         loss_mae = lossMAE(output, batch_y)
-        loss_mse = loss_mse.requires_grad_()
+        # loss_mse = loss_mse.requires_grad_()
         loss_mse.backward()
-        opt.step()
+        opt_cnn.step()
         mse_loss += loss_mse.item() * batch_x.size(0)
         mae_loss += loss_mae.item() * batch_x.size(0)
 
@@ -145,14 +148,14 @@ for epoch in range(epochs):
     mse_list.append(mse_loss / len(Dataloader.dataset))
     mae_list.append(mae_loss / len(Dataloader.dataset))
     # test mse and mae
-    with torch.no_grad():
-        test_result = CNN_model(test_x[None, ...].permute(1, 0, 2))
-        test_loss_mse = lossMSE(test_result, test_y)
-        test_loss_mae = lossMAE(test_result, test_y)
-        print('epoch: {}, test MES: {}, MAS: {}'.format(epoch + 1, test_loss_mse / len(test_y),
-                                                        test_loss_mae / len(test_y)))
-        test_mse_list.append(test_loss_mse.item())
-        test_mae_list.append(test_loss_mae.item())
+    CNN_model.eval()
+    test_result = CNN_model(test_x[None, ...].permute(1, 0, 2))
+    test_loss_mse = lossMSE(test_result, test_y)
+    test_loss_mae = lossMAE(test_result, test_y)
+    print('epoch: {}, test MES: {}, MAS: {}'.format(epoch + 1, test_loss_mse / len(test_y),
+                                                    test_loss_mae / len(test_y)))
+    test_mse_list.append(test_loss_mse.item())
+    test_mae_list.append(test_loss_mae.item())
 
 x_axis = range(0, epochs)
 plt.suptitle('1DCNN model performance')
