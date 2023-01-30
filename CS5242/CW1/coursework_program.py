@@ -26,7 +26,7 @@ class MLP(nn.Module):
         self.hidden1 = nn.Linear(5, 4)
         self.hidden2 = nn.Linear(4, 10)
         self.output = nn.Linear(10, 1)
-        self.activation = nn.ReLU()
+        self.activation = nn.LeakyReLU()
 
     def forward(self, x):
         x = self.activation(self.hidden1(x))
@@ -40,7 +40,7 @@ class CNN1D(nn.Module):
         self.cnn1d_1 = nn.Conv1d(in_channels=1, out_channels=2, kernel_size=2)
         self.cnn1d_2 = nn.Conv1d(in_channels=2, out_channels=4, kernel_size=2)
         self.fc = nn.Linear(4 * 3, 1)
-        self.activation = nn.ReLU()
+        self.activation = nn.LeakyReLU()
 
     def forward(self, x):
         x = self.activation(self.cnn1d_1(x))
@@ -74,8 +74,6 @@ for epoch in range(epochs):
         output = MLP_model(batch_x)
         loss_mse = lossMSE(output, batch_y)
         loss_mae = lossMAE(output, batch_y)
-        # very important! the stupid torch do not update parameters sometimes!
-        loss_mse = loss_mse.requires_grad_()
         loss_mse.backward()
         opt.step()
         mse_loss += loss_mse.item() * batch_x.size(0)
@@ -137,7 +135,6 @@ for epoch in range(epochs):
         output = CNN_model(batch_x)
         loss_mse = lossMSE(output, batch_y)
         loss_mae = lossMAE(output, batch_y)
-        # loss_mse = loss_mse.requires_grad_()
         loss_mse.backward()
         opt_cnn.step()
         mse_loss += loss_mse.item() * batch_x.size(0)
