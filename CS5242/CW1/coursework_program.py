@@ -50,7 +50,7 @@ class CNN1D(nn.Module):
 
 
 # set hyper parameters
-epochs = 200
+epochs = 2000
 lr = 0.001
 batch_size = 64
 Dataloader = Data.DataLoader(train_data, batch_size=batch_size, shuffle=True)
@@ -76,8 +76,8 @@ for epoch in range(epochs):
         loss_mae = lossMAE(output, batch_y)
         loss_mse.backward()
         opt.step()
-        mse_loss += loss_mse.item() * batch_x.size(0)
-        mae_loss += loss_mae.item() * batch_x.size(0)
+        mse_loss += loss_mse.item()
+        mae_loss += loss_mae.item()
 
     print('epoch: {}, train MES: {}, MAS: {}'.format(epoch + 1, mse_loss / len(Dataloader.dataset),
                                                      mae_loss / len(Dataloader.dataset)))
@@ -137,8 +137,8 @@ for epoch in range(epochs):
         loss_mae = lossMAE(output, batch_y)
         loss_mse.backward()
         opt_cnn.step()
-        mse_loss += loss_mse.item() * batch_x.size(0)
-        mae_loss += loss_mae.item() * batch_x.size(0)
+        mse_loss += loss_mse.item()
+        mae_loss += loss_mae.item()
 
     print('epoch: {}, train MES: {}, MAS: {}'.format(epoch + 1, mse_loss / len(Dataloader.dataset),
                                                      mae_loss / len(Dataloader.dataset)))
