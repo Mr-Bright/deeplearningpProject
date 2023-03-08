@@ -76,8 +76,8 @@ for epoch in range(epochs):
         loss_mae = lossMAE(output, batch_y)
         loss_mse.backward()
         opt.step()
-        mse_loss += loss_mse.item()
-        mae_loss += loss_mae.item()
+        mse_loss += loss_mse.item()*batch_x.shape[0]
+        mae_loss += loss_mae.item()*batch_x.shape[0]
 
     print('epoch: {}, train MES: {}, MAS: {}'.format(epoch + 1, mse_loss / len(Dataloader.dataset),
                                                      mae_loss / len(Dataloader.dataset)))
@@ -88,8 +88,8 @@ for epoch in range(epochs):
     test_result = MLP_model(test_x)
     test_loss_mse = lossMSE(test_result, test_y)
     test_loss_mae = lossMAE(test_result, test_y)
-    print('epoch: {}, test MES: {}, MAS: {}'.format(epoch + 1, test_loss_mse / len(test_y),
-                                                    test_loss_mae / len(test_y)))
+    print('epoch: {}, test MES: {}, MAS: {}'.format(epoch + 1, test_loss_mse,
+                                                    test_loss_mae))
     test_mse_list.append(test_loss_mse.item())
     test_mae_list.append(test_loss_mae.item())
 
@@ -137,8 +137,8 @@ for epoch in range(epochs):
         loss_mae = lossMAE(output, batch_y)
         loss_mse.backward()
         opt_cnn.step()
-        mse_loss += loss_mse.item()
-        mae_loss += loss_mae.item()
+        mse_loss += loss_mse.item()*batch_x.shape[0]
+        mae_loss += loss_mae.item()*batch_x.shape[0]
 
     print('epoch: {}, train MES: {}, MAS: {}'.format(epoch + 1, mse_loss / len(Dataloader.dataset),
                                                      mae_loss / len(Dataloader.dataset)))
@@ -149,8 +149,8 @@ for epoch in range(epochs):
     test_result = CNN_model(test_x[None, ...].permute(1, 0, 2))
     test_loss_mse = lossMSE(test_result, test_y)
     test_loss_mae = lossMAE(test_result, test_y)
-    print('epoch: {}, test MES: {}, MAS: {}'.format(epoch + 1, test_loss_mse / len(test_y),
-                                                    test_loss_mae / len(test_y)))
+    print('epoch: {}, test MES: {}, MAS: {}'.format(epoch + 1, test_loss_mse,
+                                                    test_loss_mae))
     test_mse_list.append(test_loss_mse.item())
     test_mae_list.append(test_loss_mae.item())
 
