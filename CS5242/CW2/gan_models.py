@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torchvision.transforms
 
 
 class discriminator(nn.Module):
@@ -28,10 +29,8 @@ class discriminator(nn.Module):
         x = self.activation(self.fc2(x))
         return torch.sigmoid(x)
 
-if __name__ == '__main__':
-    m = torch.rand([1,3,128,128])
-    D = discriminator()
-    D(m)
+
+
 
 
 class generator(nn.Module):
@@ -107,3 +106,11 @@ class Unet(nn.Module):
         c10 = self.conv10(c9)
         out = nn.Sigmoid()(c10)
         return out
+
+
+if __name__ == '__main__':
+    m = torch.rand([64, 1, 128, 128])
+    G = generator()
+    result = G(m)
+    img = torchvision.transforms.ToPILImage()(result[0])
+    img.show()
