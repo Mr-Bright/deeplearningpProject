@@ -10,7 +10,7 @@ class discriminator(nn.Module):
         self.conv3 = nn.Conv2d(32, 64, kernel_size=5)
         self.pooling = nn.MaxPool2d(2)
 
-        self.fc1 = nn.Linear(16384, 128)
+        self.fc1 = nn.Linear(6272, 128)
         self.fc2 = nn.Linear(128, 1)
         self.activation = nn.LeakyReLU(0.1)
 
@@ -18,8 +18,8 @@ class discriminator(nn.Module):
         # x = x.view(-1, 3, 128, 128)
         x = self.activation(self.conv1(x))
         x = self.pooling(x)
-        # x = self.activation(self.conv2(x))
-        # x = self.pooling(x)
+        x = self.activation(self.conv2(x))
+        x = self.pooling(x)
         # x = self.activation(self.conv3(x))
         # x = self.pooling(x)
         print(x.shape)
